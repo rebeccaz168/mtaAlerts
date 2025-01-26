@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-import requests
-# from google.transit import gtfs_realtime_pb2
+from services.status_monitor import get_line_status
 
 app = FastAPI()
-FEED_URL = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g"
 
 
 # Root route
@@ -14,10 +12,12 @@ async def root():
 # Status route 
 @app.get("/status/{line_name}", tags= ["Status"])
 async def getStatus(line_name: str): 
-    requests.get(FEED_URL)
-    # feed = gtfs_realtime_pb2.FeedMessage()
+   return get_line_status(line_name)
 
 # # Uptime route 
 # @app.get("/uptime/{line_name}", tags=["Uptime"])
 #     """
 #     Returns the uptime of a subway line 
+
+
+# @app.on_event("startup")
