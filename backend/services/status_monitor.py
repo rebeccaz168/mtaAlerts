@@ -9,7 +9,6 @@ def get_line_status(line_name: str):
     feed = fetch_feed()
     alerts = parse_alerts(feed)
     delayed_trains = get_all_statuses(alerts)
-    print("DELAYED", delayed_trains)
     delayed = filter_line_status(delayed_trains, line_name)
     
     # Check for status transitions
@@ -35,3 +34,4 @@ def monitor_status_task():
     lines_to_monitor = ["a", "c", "e", "b", "d", "f", "m", "g", "j", "z", "l", "1", "2", "3", "4", "5", "6", "7", "s"]
     for line in lines_to_monitor:
         get_line_status(line)
+

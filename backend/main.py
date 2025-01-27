@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from services.status_monitor import get_line_status
+from apscheduler.schedulers.background import BackgroundScheduler
+from services.status_monitor import monitor_status_task 
 
 app = FastAPI()
-
+scheduler = BackgroundScheduler()
 
 # Root route
 @app.get("/")
@@ -21,3 +23,7 @@ async def getStatus(line_name: str):
 
 
 # @app.on_event("startup")
+def monitorStatus(): 
+    scheduler.add_job(monitor_status_task, 'interval', seconds=30)  # update every 30 seconds 
+    scheduler.start()
+    
