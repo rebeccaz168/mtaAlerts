@@ -16,7 +16,6 @@ def get_line_status(line_name: str):
     try: 
         feed = fetch_feed()
         alerts = parse_alerts(feed)
-        print(alerts)
         delayed_trains = get_all_statuses(alerts)
         delayed = filter_line_status(delayed_trains, line_name)
     except Exception as e: 
@@ -30,7 +29,7 @@ def get_line_status(line_name: str):
         else:
             logger.info(f"Line {line_name} is now recovered.")
         line_status_cache[line_name] = delayed
-    print(line_status_cache)
+
     return {"line_name": line_name, "delayed": delayed} 
 
 def calculate_uptime(total_time: timedelta, total_delay: timedelta) -> float:
@@ -67,7 +66,6 @@ def get_uptime(line_name: str):
     line_data["last_checked"] = now 
     
     uptime = calculate_uptime(line_data["total_time_monitored"], line_data["total_time_delayed"])
-    print(line_uptime_data)
     return {"uptime": uptime}
     
 
