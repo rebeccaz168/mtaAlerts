@@ -24,7 +24,6 @@ async def getUptime(line_name: str):
     """
     return get_uptime(line_name)
 
-
 # @app.on_event("startup")
 def monitorStatus(): 
     scheduler.add_job(monitor_status_task, 'interval', seconds=30)  # MTA API refreshes every 30 seconds  

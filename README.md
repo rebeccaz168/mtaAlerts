@@ -1,5 +1,5 @@
 # mtaAlerts
-MTA Subways delays
+Continuously monitors the status of MTA service to see whether a line is delayed or not. Also calculates uptime for each subway line. 
 
 ## installation 
 1. Clone the repo : 

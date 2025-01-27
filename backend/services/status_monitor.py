@@ -7,12 +7,20 @@ line_status_cache = {}
 logger = logging.getLogger(__name__)
 line_uptime_data = {}
 
-# returns boolean True if train is delayed, logs out if a train is delayed or recovered
+
 def get_line_status(line_name: str):
-    feed = fetch_feed()
-    alerts = parse_alerts(feed)
-    delayed_trains = get_all_statuses(alerts)
-    delayed = filter_line_status(delayed_trains, line_name)
+    """
+    returns status for particular subway line
+    logs out if train status changes (delayed/recovered)
+    """
+    try: 
+        feed = fetch_feed()
+        alerts = parse_alerts(feed)
+        print(alerts)
+        delayed_trains = get_all_statuses(alerts)
+        delayed = filter_line_status(delayed_trains, line_name)
+    except Exception as e: 
+        raise Exception(f"Failed to fetch or parse data for line {line_name}: {e}")
     
     # Check for status transitions
     prev_status = line_status_cache.get(line_name, False)
@@ -22,19 +30,30 @@ def get_line_status(line_name: str):
         else:
             logger.info(f"Line {line_name} is now recovered.")
         line_status_cache[line_name] = delayed
-
+    print(line_status_cache)
     return {"line_name": line_name, "delayed": delayed} 
 
+def calculate_uptime(total_time: timedelta, total_delay: timedelta) -> float:
+    """
+    Calculates the uptime percentage based on total monitored and delay times.
+    """
+    total_seconds = total_time.total_seconds()
+    delayed_seconds = total_delay.total_seconds()
+    return 1 - (delayed_seconds / total_seconds) if total_seconds > 0 else 1.0
+
 def get_uptime(line_name: str):
+    """
+    tracks and returns the uptime for a particular subway line 
+    """
     current_status = get_line_status(line_name.lower())
     currently_delayed = current_status["delayed"]
-    print("is train currently delayed", currently_delayed)
-    # Initialize uptime tracking if not already present
+
+    # Initialize uptime tracking if not there
     if line_name not in line_uptime_data:
         line_uptime_data[line_name] = {
-            "last_checked": datetime.now(),  # Last time status was checked
-            "total_time_monitored": timedelta(0),  # Total monitoring time
-            "total_time_delayed": timedelta(0)  # Total delay time
+            "last_checked": datetime.now(),  
+            "total_time_monitored": timedelta(0), 
+            "total_time_delayed": timedelta(0)
         }
     
     now = datetime.now()
@@ -47,15 +66,15 @@ def get_uptime(line_name: str):
     
     line_data["last_checked"] = now 
     
-    total_time = line_data["total_time_monitored"].total_seconds()
-    total_delay = line_data["total_time_delayed"].total_seconds()
-    uptime = 1 - (total_delay / total_time) if total_time > 0 else 1.0
-    
+    uptime = calculate_uptime(line_data["total_time_monitored"], line_data["total_time_delayed"])
+    print(line_uptime_data)
     return {"uptime": uptime}
     
 
 def monitor_status_task():
-    #  All subway lines to monitor
+    """
+    Monitors the status and uptime of specified subway lines.
+    """
     lines_to_monitor = ["a", "c", "e", "b", "d", "f", "m", "g", "j", "z", "l", "1", "2", "3", "4", "5", "6", "7", "s"]
     for line in lines_to_monitor:
         get_line_status(line)
