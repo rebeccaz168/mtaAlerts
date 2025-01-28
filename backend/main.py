@@ -2,9 +2,18 @@ from fastapi import FastAPI
 from services.status_monitor import get_line_status, get_uptime
 from apscheduler.schedulers.background import BackgroundScheduler
 from services.status_monitor import monitor_status_task 
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 scheduler = BackgroundScheduler()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Root route
 @app.get("/")

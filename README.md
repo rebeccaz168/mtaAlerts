@@ -11,3 +11,8 @@ Continuously monitors the status of MTA service to see whether a line is delayed
 Backend 
 uvicorn main:app --reload
 navigate to : http://127.0.0.1:8000 
+
+frontend 
+npm start 
+
+http://localhost:3000
