@@ -13,6 +13,8 @@ def get_line_status(line_name: str):
     returns status for particular subway line
     logs out if train status changes (delayed/recovered)
     """
+    
+    # here : could also check if there was a filtered status within the last call and return that value
     try: 
         feed = fetch_feed()
         alerts = parse_alerts(feed)
